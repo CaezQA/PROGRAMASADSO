@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Analizador de Edades</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        body {
+            background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);
+            color: #333;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+        }
+        .container {
+            background-color: rgba(255, 255, 255, 0.95);
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            padding: 30px;
+            width: 100%;
+            max-width: 800px;
+            margin: 20px 0;
+        }
+        h1 {
+            text-align: center;
+            color: #2c3e50;
+            margin-bottom: 20px;
+            font-size: 2.2rem;
+        }
+        .description {
+            text-align: center;
+            margin-bottom: 25px;
+            color: #7f8c8d;
+            font-size: 1.1rem;
+        }
+        .input-section {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+        .age-input {
+            padding: 12px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 1.1rem;
+            text-align: center;
+            transition: border-color 0.3s;
+        }
+        .age-input:focus {
+            border-color: #3498db;
+            outline: none;
+        }
+        .age-input.invalid {
+            border-color: #e74c3c;
+            background-color: #ffeaea;
+        }
+        .buttons {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+        .btn {
+            padding: 12px 25px;
+            border: none;
+            border-radius: 8px;
+            font-size: 1.1rem;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        .btn-primary {
+            background-color: #3498db;
+            color: white;
+        }
+        .btn-primary:hover {
+            background-color: #2980b9;
+        }
+        .btn-secondary {
+            background-color: #e74c3c;
+            color: white;
+        }
+        .btn-secondary:hover {
+            background-color: #c0392b;
+        }
+        .results {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 20px;
+        }
+        .result-card {
+            background-color: #f8f9fa;
+            border-radius: 10px;
+            padding: 20px;
+            text-align: center;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        .result-title {
+            font-size: 1rem;
+            color: #7f8c8d;
+            margin-bottom: 10px;
+        }
+        .result-value {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #2c3e50;
+        }
+        .result-card.highlight {
+            background-color: #e3f2fd;
+            border: 2px solid #3498db;
+        }
+        .error-message {
+            color: #e74c3c;
+            text-align: center;
+            margin-top: 10px;
+            font-weight: 500;
+        }
+        .instructions {
+            background-color: #e3f2fd;
+            border-left: 4px solid #3498db;
+            padding: 15px;
+            margin-bottom: 25px;
+            border-radius: 0 8px 8px 0;
+        }
+        footer {
+            margin-top: auto;
+            color: white;
+            text-align: center;
+            padding: 15px;
+            font-size: 0.9rem;
+        }
+        @media (max-width: 768px) {
+            .input-section {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            .results {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Analizador de Edades</h1>
+        <p class="description">Ingresa las edades de 10 personas (entre 1 y 120 años)</p>
+        
+        <div class="instructions">
+            <p><strong>Instrucciones:</strong> Ingresa 10 edades válidas (entre 1 y 120 años) y haz clic en "Calcular".</p>
+            <p><strong>Categorías:</strong> Menores de edad (<18), Mayores de edad (≥18), Adultos mayores (≥60).</p>
+        </div>
+        
+        <div class="input-section">
+            <input type="number" class="age-input" placeholder="Edad 1" min="1" max="120">
+            <input type="number" class="age-input" placeholder="Edad 2" min="1" max="120">
+            <input type="number" class="age-input" placeholder="Edad 3" min="1" max="120">
+            <input type="number" class="age-input" placeholder="Edad 4" min="1" max="120">
+            <input type="number" class="age-input" placeholder="Edad 5" min="1" max="120">
+            <input type="number" class="age-input" placeholder="Edad 6" min="1" max="120">
+            <input type="number" class="age-input" placeholder="Edad 7" min="1" max="120">
+            <input type="number" class="age-input" placeholder="Edad 8" min="1" max="120">
+            <input type="number" class="age-input" placeholder="Edad 9" min="1" max="120">
+            <input type="number" class="age-input" placeholder="Edad 10" min="1" max="120">
+        </div>
+        
+        <div class="buttons">
+            <button class="btn btn-primary" id="calculate-btn">Calcular</button>
+            <button class="btn btn-secondary" id="reset-btn">Reiniciar</button>
+        </div>
+        
+        <div class="error-message" id="error-message"></div>
+        
+        <div class="results">
+            <div class="result-card">
+                <div class="result-title">Menores de edad</div>
+                <div class="result-value" id="underage">-</div>
+            </div>
+            <div class="result-card">
+                <div class="result-title">Mayores de edad</div>
+                <div class="result-value" id="adults">-</div>
+            </div>
+            <div class="result-card">
+                <div class="result-title">Adultos mayores</div>
+                <div class="result-value" id="seniors">-</div>
+            </div>
+            <div class="result-card highlight">
+                <div class="result-title">Edad más baja</div>
+                <div class="result-value" id="min-age">-</div>
+            </div>
+            <div class="result-card highlight">
+                <div class="result-title">Edad más alta</div>
+                <div class="result-value" id="max-age">-</div>
+            </div>
+            <div class="result-card highlight">
+                <div class="result-title">Promedio de edades</div>
+                <div class="result-value" id="average-age">-</div>
+            </div>
+        </div>
+    </div>
+    
+    <footer>
+        <p>Programa de análisis de edades &copy; 2023</p>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const ageInputs = document.querySelectorAll('.age-input');
+            const calculateBtn = document.getElementById('calculate-btn');
+            const resetBtn = document.getElementById('reset-btn');
+            const errorMessage = document.getElementById('error-message');
+            
+            // Función para validar una edad
+            function isValidAge(age) {
+                return age >= 1 && age <= 120;
+            }
+            
+            // Función para calcular los resultados
+            function calculateResults() {
+                const ages = [];
+                let valid = true;
+                
+                // Recoger y validar las edades
+                ageInputs.forEach((input, index) => {
+                    const age = parseInt(input.value);
+                    
+                    if (isNaN(age) || !isValidAge(age)) {
+                        input.classList.add('invalid');
+                        errorMessage.textContent = `Error: La edad ${index + 1} no es válida. Debe estar entre 1 y 120 años.`;
+                        valid = false;
+                    } else {
+                        input.classList.remove('invalid');
+                        ages.push(age);
+                    }
+                });
+                
+                if (!valid) return;
+                
+                errorMessage.textContent = '';
+                
+                // Calcular resultados
+                const underage = ages.filter(age => age < 18).length;
+                const adults = ages.filter(age => age >= 18).length;
+                const seniors = ages.filter(age => age >= 60).length;
+                const minAge = Math.min(...ages);
+                const maxAge = Math.max(...ages);
+                const averageAge = (ages.reduce((sum, age) => sum + age, 0) / ages.length).toFixed(1);
+                
+                // Mostrar resultados
+                document.getElementById('underage').textContent = underage;
+                document.getElementById('adults').textContent = adults;
+                document.getElementById('seniors').textContent = seniors;
+                document.getElementById('min-age').textContent = minAge;
+                document.getElementById('max-age').textContent = maxAge;
+                document.getElementById('average-age').textContent = averageAge;
+            }
+            
+            // Función para reiniciar el formulario
+            function resetForm() {
+                ageInputs.forEach(input => {
+                    input.value = '';
+                    input.classList.remove('invalid');
+                });
+                errorMessage.textContent = '';
+                
+                // Reiniciar resultados
+                document.getElementById('underage').textContent = '-';
+                document.getElementById('adults').textContent = '-';
+                document.getElementById('seniors').textContent = '-';
+                document.getElementById('min-age').textContent = '-';
+                document.getElementById('max-age').textContent = '-';
+                document.getElementById('average-age').textContent = '-';
+            }
+            
+            // Event listeners
+            calculateBtn.addEventListener('click', calculateResults);
+            resetBtn.addEventListener('click', resetForm);
+            
+            // Validar entrada mientras se escribe
+            ageInputs.forEach(input => {
+                input.addEventListener('input', function() {
+                    if (this.value) {
+                        const age = parseInt(this.value);
+                        if (isNaN(age) || !isValidAge(age)) {
+                            this.classList.add('invalid');
+                        } else {
+                            this.classList.remove('invalid');
+                        }
+                    } else {
+                        this.classList.remove('invalid');
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+</html>
